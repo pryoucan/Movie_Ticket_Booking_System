@@ -1,0 +1,20 @@
+{
+  "name": "movieticketbookingsystem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.19.2",
+    "mongoose": "^9.1.4",
+    "nodemon": "^3.1.11"
+  }
+}
