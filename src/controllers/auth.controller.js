@@ -1,67 +1,39 @@
-import { User } from "../models/user.model";
-import jwt from "jsonwebtoken";
+import { userLoginService, userRegisterService } from "../services/auth.service";
 
 const userRegister = async (req, res) => {
-    const { username, mobile, email, password } = req.body;
 
     try {
-        const existingUser = await User.findOne({
-            $or: [{ username }, { mobile }, { email }]
-        });
-
-        if(existingUser) {
-            return res.status(400).json({
-                message: "User already exists with this entry"
-            });
-        }
-
-        const user = await User.create({
-            username,
-            mobile,
-            email,
-            password
-        });
-        
+        const user = await userRegisterService(req.body);
         return res.status(201).json({
+            success: true,
             message: "User registered successfully",
-            user
+            data: user
         });
     }
     catch(error) {
-        return res.status(500).json({ message: "Something went wrong" });
+        return res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "Something went wrong" 
+        });
     }
 };
 
 
 const userLogin = async (req, res) => {
-    const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
-        if(!user) {
-            return res.status(400).json({
-                message: "Invalid credentials"
-            });
-        }
-
-        if(!(await user.comparePassword(password))) {
-            return res.status(400).json({
-                message: "Invalid credentials"
-            });
-        }
-
-        const token = await jwt.sign({ id: user._id }, 
-            process.env.JWT_KEY, 
-            { expiresIn: "1d" }
-        );
-
+        const result = await userLoginService(req.body);
         return res.status(200).json({
-            message: "Login successfull",
-            token
+            success: true,
+            message: "Logged in successfully",
+            ...result
         });
     }
     catch(error) {
-        return res.status(500).json({ message: "Something went wrong" });
+        return res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message || "Something went wrong" 
+        });
     }
 };
 
