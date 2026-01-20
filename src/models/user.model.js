@@ -7,18 +7,16 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
-    contact: {
-        mobile: {
-            type: String,
-            required: true
-        },
-        email: {
-            type: String,
-            required: true,
-            lowercase: true,
-            trim: true
-        },
-        required: true
+    mobile: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    email: {
+        type: String,
+        required: true,
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
