@@ -1,5 +1,6 @@
 import { Theatre } from "../models/theatre.model.js";
-
+import { Movie } from "../models/movie.model.js";
+import { ApiError } from "../utils/error_class.js";
 
 const getTheatreByFilterService = async (q) => {
     const filter = {};
@@ -67,41 +68,45 @@ const deleteTheatreService = async (id) => {
 };
 
 
-const updateMovieInTheatreService = async (theatreId, moviesIds, insertFlag) => {
+const addMovieInTheatreService = async (theatreId, moviesIds) => {
     const theatre = await Theatre.findById(theatreId);
-    if(!theatre) {
-        const error = new Error("Theatre not found");
-        error.statusCode = 404;
-        throw error;
+    if(!theatre) throw new ApiError(404, "Theatre not found");
+    
+    const currMovies = new Set(theatre.movies.map((m) => m.toString()));
+    const moviesToAdd = moviesIds.filter((mi) => !currMovies.has(mi));
+    if(moviesToAdd.length === 0) {
+        throw new ApiError(409, "The movies are already present");
     }
 
-    let cntr = 0;
-    if(insertFlag) {
-        moviesIds.forEach(mi => {
-            if(theatre.movies.includes(mi)) {
-                cntr++;
-            }
-            else {
-                theatre.movies.push(mi);
-            }
-
-            if(cntr === moviesIds.length) {
-                const error = new Error("Movie is already present in theatre");
-                error.statusCode = 409;
-                throw error;
-            }
-        });
+    const existMovies = await Movie.find({ _id: { $in: moviesToAdd } })
+    .select("_id").lean();
+    console.log(existMovies);
+    if(existMovies.length === 0) {
+        throw new ApiError(400, "Invalid movie Ids");
     }
-    else if(!insertFlag && theatre.movies.length > 0) {
-        let moviesToDelete = theatre.movies;
-        moviesIds.forEach(mi => {
-            moviesToDelete = moviesToDelete.filter(mtd => mtd === mi);
-        });
-        theatre.movies = moviesToDelete;
-    }
-    await theatre.save();
-    return theatre.populate("movies");
+    
+    const result = await Theatre.findByIdAndUpdate(
+        theatreId,
+        { $addToSet: { movies: { $each: existMovies } } },
+        { new: true }
+    );
+    await result.populate("movies");
+    return result;
 }
+
+
+const deleteMovieInTheatreService = async (theatreId, moviesIds) => {    
+    const result = await Theatre.findByIdAndUpdate(
+        theatreId,
+        { $pull: { movies: { $in: moviesIds } } },
+        { new: true }
+    );
+
+    if(!result) throw new ApiError(404, "Theatre not found");
+    await result.populate("movies");
+    return result;
+};
+
 
 export {  
     getTheatreByFilterService,
@@ -109,5 +114,6 @@ export {
     createTheatreService,
     updateTheatreService,
     deleteTheatreService,
-    updateMovieInTheatreService
+    addMovieInTheatreService,
+    deleteMovieInTheatreService,
 };

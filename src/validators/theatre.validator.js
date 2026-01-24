@@ -27,7 +27,7 @@ const cantEmpty = (field) => {
     return z.string().trim().min(1, `${field} cannot be empty`).optional();
 };
 
-const filterQuerySchema = z.object({
+const filterQuerySchemaValidator = z.object({
     name: cantEmpty("name"),
     city: cantEmpty("city"),
     pincode: cantEmpty("pincode")
@@ -36,4 +36,14 @@ const filterQuerySchema = z.object({
 }).strict();
 
 
-export { createTheatreValidator, filterQuerySchema };
+const updateMovieInTheatreValidator = z.object({
+    movies:
+        z.array(z.string()).min(1, "movies cannot be empty"),
+    insertFlag:
+        z.boolean()
+}).strict();
+
+export { 
+    createTheatreValidator, 
+    filterQuerySchemaValidator, 
+    updateMovieInTheatreValidator };

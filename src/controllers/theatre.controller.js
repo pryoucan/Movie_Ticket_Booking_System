@@ -4,7 +4,8 @@ import {
     createTheatreService,
     updateTheatreService,
     deleteTheatreService,
-    updateMovieInTheatreService
+    addMovieInTheatreService,
+    deleteMovieInTheatreService
 } from "../services/theatre.service.js";
 
 
@@ -105,25 +106,44 @@ const deleteTheatre = async (req, res) => {
 };
 
 
-const updateMovieInTheatre = async (req, res) => {
-    const insertFlag = true;
+const addMovieInTheatre = async (req, res) => {
     try {
-        const theatre = await updateMovieInTheatreService(
-            req.params.id, req.body.movies, insertFlag
+        const theatre = await addMovieInTheatreService(
+            req.params.id, req.body.movies
         );
         return res.status(200).json({
             success: true,
-            message: "Theatre fetched successfully",
+            message: "Theatre updated successfully",
             data: theatre
         });
     }
     catch(error) {
         return res.status(error.statusCode || 500).json({
             success: false,
-            message: error.message || "Something went wrong"
+            message: error?.message || "Something went wrong"
         });
     }
 }
+
+
+const deleteMovieInTheatre = async (req, res) => {
+    try {
+        const result = await deleteMovieInTheatreService(
+            req.params.id, req.body.movies
+        );
+        return res.status(200).json({
+            success: true,
+            message: "Movies deleted successfully",
+            data: result
+        });
+    }
+    catch(error) {
+        return res.status(error?.statusCose || 500).json({
+            success: false,
+            message: error?.message || "Something went wrong"
+        });
+    }
+};
 
 
 export { 
@@ -132,5 +152,6 @@ export {
     createTheatre, 
     updateTheatre, 
     deleteTheatre,
-    updateMovieInTheatre
+    addMovieInTheatre,
+    deleteMovieInTheatre
 };
