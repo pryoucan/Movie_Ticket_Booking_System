@@ -8,8 +8,8 @@ export const movieRoute = Router();
 movieRoute.post("/", validateBody(createMovieValidator), createMovie);
 
 movieRoute.get("/", getMovieByName);
-movieRoute.get("/:id", getMovieById);
+movieRoute.get("/:mId", getMovieById);
 
-movieRoute.put("/:id", updateMovie);
+movieRoute.put("/:mId", updateMovie);
 
-movieRoute.delete("/:id", deleteMovie);
+movieRoute.delete("/:mId", deleteMovie);

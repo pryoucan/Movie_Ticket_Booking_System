@@ -28,15 +28,8 @@ const getTheatreByFilter = async (req, res) => {
 
 
 const getTheatreById = async (req, res) => {
-    const { id } = req.params;
-    if(!id) {
-        return res.status(400).json({
-            success: false,
-            message: "Search field required",
-        });
-    }
     try {
-        const theatre = await getTheatreByIdService(id);
+        const theatre = await getTheatreByIdService(req.params.tId);
         return res.status(200).json({
             success: true,
             message: "Theatre fetched successfully",
@@ -72,7 +65,7 @@ const createTheatre = async (req, res) => {
 
 const updateTheatre = async (req, res) => {
     try {
-        const theatre = await updateTheatreService(req.body);
+        const theatre = await updateTheatreService(req.params.tId, req.body);
         return res.status(200).json({
             success: true,
             message: "Theatre updated successfully",
@@ -90,7 +83,7 @@ const updateTheatre = async (req, res) => {
 
 const deleteTheatre = async (req, res) => {
     try {
-        const theatre = await deleteTheatreService(req.body);
+        const theatre = await deleteTheatreService(req.params.tId);
         return res.status(200).json({
             success: true,
             message: "Theatre deleted successfully",
@@ -109,11 +102,11 @@ const deleteTheatre = async (req, res) => {
 const addMovieInTheatre = async (req, res) => {
     try {
         const theatre = await addMovieInTheatreService(
-            req.params.id, req.body.movies
+            req.params.tId, req.params.mId
         );
         return res.status(200).json({
             success: true,
-            message: "Theatre updated successfully",
+            message: "Movie added successfully",
             data: theatre
         });
     }
@@ -129,11 +122,11 @@ const addMovieInTheatre = async (req, res) => {
 const deleteMovieInTheatre = async (req, res) => {
     try {
         const result = await deleteMovieInTheatreService(
-            req.params.id, req.body.movies
+            req.params.tId, req.params.mId
         );
         return res.status(200).json({
             success: true,
-            message: "Movies deleted successfully",
+            message: "Movie deleted successfully",
             data: result
         });
     }

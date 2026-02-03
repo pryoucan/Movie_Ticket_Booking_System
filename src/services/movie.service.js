@@ -19,8 +19,8 @@ const getMovieByNameService = async (q) => {
 };
 
 
-const getMovieByIdService = async (id) => {
-    const movie = await Movie.findById(id);
+const getMovieByIdService = async (mId) => {
+    const movie = await Movie.findById(mId);
     if(!movie) {
         const error = new Error("Movie not found");
         error.statusCode = 404;
@@ -36,8 +36,8 @@ const createMovieService = async (data) => {
 };
 
 
-const updateMovieService = async(id, data) => {
-    const movie = await Movie.findByIdAndUpdate(id, data, { 
+const updateMovieService = async(mId, data) => {
+    const movie = await Movie.findByIdAndUpdate(mId, data, { 
         new: true, runValidators: true 
     });
     if(!movie) {
@@ -49,8 +49,8 @@ const updateMovieService = async(id, data) => {
 };
 
 
-const deleteMovieService = async(id) => {
-    const result = await Movie.findByIdAndDelete(id);
+const deleteMovieService = async(mId) => {
+    const result = await Movie.findByIdAndDelete(mId);
     if(!result) {
         const error = new Error("Movie not found");
         error.statusCode = 404;

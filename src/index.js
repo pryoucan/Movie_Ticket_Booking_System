@@ -14,8 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/movie", movieRoute);
-app.use("/api/v1/theatre", theatreRoute)
+app.use("/api/v1/movies", movieRoute);
+app.use("/api/v1/theatres", theatreRoute)
 
 
 const startServer = async () => {

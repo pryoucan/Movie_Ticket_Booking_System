@@ -26,9 +26,8 @@ const getMovieByName = async (req, res) => {
 
 
 const getMovieById = async (req, res) => {
-    const { id } = req.params;
     try {
-        const movie = await getMovieByIdService(id);
+        const movie = await getMovieByIdService(req.params.mId);
         return res.status(200).json({
             success: true,
             message: "Movie fetched successfully",
@@ -63,9 +62,8 @@ const createMovie = async (req, res) => {
 
 
 const updateMovie = async (req, res) => {
-    const { id } = req.params;
     try {
-        const movie = await updateMovieService(id, req.body);
+        const movie = await updateMovieService(req.params.mId, req.body);
         return res.status(200).json({
             success: true,
             message: "Movie updated successfully",
@@ -82,9 +80,8 @@ const updateMovie = async (req, res) => {
 
 
 const deleteMovie = async (req, res) => {
-    const { id } = req.params;
     try {
-        const result = await deleteMovieService(id);
+        const result = await deleteMovieService(req.params.mId);
         return res.status(200).json({
             success: true,
             message: "Movie deleted successfully",

@@ -20,11 +20,11 @@ export const theatreRoute = Router();
 theatreRoute.post("/", validateBody(createTheatreValidator), createTheatre);
 
 theatreRoute.get("/", validateQuery(filterQuerySchemaValidator), getTheatreByFilter);
-theatreRoute.get("/:id", getTheatreById);
+theatreRoute.get("/:tId", getTheatreById);
 
-theatreRoute.put("/:id", updateTheatre);
+theatreRoute.patch("/:tId", updateTheatre);
 
-theatreRoute.patch("/:id/movies", addMovieInTheatre);
-theatreRoute.delete("/:id/movies", deleteMovieInTheatre);
+theatreRoute.post("/:tId/movies/:mId", addMovieInTheatre);
+theatreRoute.delete("/:tId/movies/:mId", deleteMovieInTheatre);
 
-theatreRoute.delete("/:id", deleteTheatre);
+theatreRoute.delete("/:tId", deleteTheatre);

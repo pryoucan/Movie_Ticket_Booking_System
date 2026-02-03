@@ -43,8 +43,8 @@ const getTheatreByFilterService = async (q) => {
 };
 
 
-const getTheatreByIdService = async (id) => {
-    const theatre = await Theatre.findById(id);
+const getTheatreByIdService = async (tId) => {
+    const theatre = await Theatre.findById(tId);
     if(!theatre) {
         const error = new Error("Theater not found");
         error.statusCode = 404;
@@ -60,8 +60,8 @@ const createTheatreService = async (data) => {
 };
 
 
-const updateTheatreService = async (id, data) => {
-    const theatre = await Theatre.findByIdAndUpdate(id, data, {
+const updateTheatreService = async (tId, data) => {
+    const theatre = await Theatre.findByIdAndUpdate(tId, data, {
         new: true,
         runValidators: true
     });
@@ -75,8 +75,8 @@ const updateTheatreService = async (id, data) => {
 };
 
 
-const deleteTheatreService = async (id) => {
-    const result = await Theatre.findByIdAndDelete(id);
+const deleteTheatreService = async (tId) => {
+    const result = await Theatre.findByIdAndDelete(tId);
         if(!result) {
         const error = new Error("Theater not found");
         error.statusCode = 404;
@@ -86,44 +86,38 @@ const deleteTheatreService = async (id) => {
 };
 
 
-const addMovieInTheatreService = async (theatreId, moviesIds) => {
-    const theatre = await Theatre.findById(theatreId);
-    if(!theatre) throw new ApiError(404, "Theatre not found");
-    
-    const currMovies = new Set(theatre.movies.map((m) => m.toString()));
-    const moviesToAdd = moviesIds.filter((mi) => !currMovies.has(mi));
-    if(moviesToAdd.length === 0) {
-        throw new ApiError(409, "The movies are already present");
+const addMovieInTheatreService = async (tId, mId) => {
+    const validMovie = await Movie.exists({ _id: mId });
+    if(!validMovie) {
+        throw new ApiError(400, "Invalid movie entry");
     }
 
-    const existMovies = await Movie.find({ _id: { $in: moviesToAdd } })
-    .select("_id").lean();
-    console.log(existMovies);
-    if(existMovies.length === 0) {
-        throw new ApiError(400, "Invalid movie Ids");
-    }
-    
     const result = await Theatre.findByIdAndUpdate(
-        theatreId,
-        { $addToSet: { movies: { $each: existMovies } } },
+        tId,
+        { $addToSet: { movies: mId } },
         { new: true }
-    );
-    await result.populate("movies");
+    ).select({ movies: 1 }).lean();
+
+    if(!result) {
+        throw new ApiError(404, "Theatre not found");
+    }
+
     return result;
 }
 
 
-const deleteMovieInTheatreService = async (theatreId, moviesIds) => {    
-    const result = await Theatre.findByIdAndUpdate(
-        theatreId,
-        { $pull: { movies: { $in: moviesIds } } },
-        { new: true }
-    );
+const deleteMovieInTheatreService =  async (tId, mId) => {
+    const result = await Theatre.deleteOne({
+        _id: tId,
+        movies: mId
+    });
 
-    if(!result) throw new ApiError(404, "Theatre not found");
-    await result.populate("movies");
+    if(result.modifiedCount === 0) {
+        throw new ApiError(404, "Theatre not found");
+    }
+
     return result;
-};
+}
 
 
 export {  
