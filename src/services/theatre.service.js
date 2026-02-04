@@ -96,7 +96,9 @@ const addMovieInTheatreService = async (tId, mId) => {
         tId,
         { $addToSet: { movies: mId } },
         { new: true }
-    ).select({ movies: 1 }).lean();
+    ).select({ movies: 1 })
+    .populate("movies")
+    .lean();
 
     if(!result) {
         throw new ApiError(404, "Theatre not found");
@@ -107,15 +109,15 @@ const addMovieInTheatreService = async (tId, mId) => {
 
 
 const deleteMovieInTheatreService =  async (tId, mId) => {
-    const result = await Theatre.deleteOne({
-        _id: tId,
-        movies: mId
-    });
+    const result = await Theatre.updateOne(
+        {_id: tId},
+        { $pull: { movies: mId } },
+        { new: true }
+    );
 
-    if(result.modifiedCount === 0) {
+    if(result.matchedCount === 0) {
         throw new ApiError(404, "Theatre not found");
     }
-
     return result;
 }
 
