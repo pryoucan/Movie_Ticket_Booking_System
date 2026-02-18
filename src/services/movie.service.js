@@ -1,21 +1,26 @@
 import { Movie } from "../models/movie.model.js"
+import { ApiError } from "../utils/error_class.js";
 
 
 const getMovieByNameService = async (q) => {
-    const filter = {};
-    if(Object.keys(q).length > 0) {
-        if(q.title) {
-            filter.title = q.title;
+    if (q?.m) {
+        const movie = await Movie.find({ $text: { $search: q.m } }).
+        lean();
+        if (!movie.length) {
+            throw new ApiError(404, "Movie not found");
         }
+        return movie;
     }
-    console.log(filter);
-    const movie = await Movie.find({ $text: { $search: filter.title } });
-    if(movie.length === 0) {
-        const error = new Error("Movie not found");
-        error.statusCode = 404;
-        throw error;
-    }
-    return movie;
+
+    const pagination = {};
+    pagination.limit = Math.min(Math.max(parseInt(q?.limit) || 10, 1), 100);
+    pagination.skip = parseInt(q?.skip || 0);
+
+
+    return await Movie.find({})
+        .lean()
+        .limit(pagination.limit)
+        .skip(pagination.skip);
 };
 
 
