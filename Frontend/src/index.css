@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    
+  /* Override emerald with MongoDB Green */
+  --color-emerald-500: #00ed64; /* accent text */
+  --color-emerald-600: #00684a; /* main button/accent */
+  --color-emerald-700: #005039; /* main button hover */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-slate-50);
+    color: var(--color-slate-900);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
